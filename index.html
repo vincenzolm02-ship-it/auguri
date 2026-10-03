@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buon Compleanno Carmine Pio!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #0b0b0b;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+    .font-serif-custom {
+      font-family: 'Playfair Display', serif;
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FFE082 0%, #FFB300 50%, #FF8F00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bg-juve-stripe {
+      background: repeating-linear-gradient(
+        90deg,
+        #000000,
+        #000000 20px,
+        #ffffff 20px,
+        #ffffff 40px
+      );
+    }
+    .ticket-card {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+    }
+    .flame {
+      animation: flicker 1s ease-in-out infinite alternate;
+      transform-origin: center bottom;
+    }
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+      50% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+      100% { transform: scale(0.95) rotate(-1deg); opacity: 0.85; }
+    }
+    .nfc-pulse {
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-4 md:p-8">
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- Header -->
+  <header class="text-center my-6 z-10">
+    <div class="inline-block bg-white text-black px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase mb-3 shadow-lg">
+      Special Birthday Event
+    </div>
+    <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight">
+      Tanti Auguri <br>
+      <span class="gold-gradient-text text-5xl md:text-7xl font-serif-custom italic">Carmine Pio!</span>
+    </h1>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="w-full max-w-md mx-auto flex flex-col items-center gap-8 z-10">
+
+    <!-- Interactive Candle Section -->
+    <div id="cake-section" class="w-full bg-neutral-900/80 border border-neutral-800 backdrop-blur-md rounded-2xl p-6 text-center shadow-2xl">
+      <p class="text-neutral-400 text-sm mb-4">Soffia sulla candelina per scoprire il tuo regalo speciale!</p>
+      
+      <!-- Interactive Cake SVG -->
+      <div class="relative w-32 h-32 mx-auto cursor-pointer" onclick="blowOutCandle()">
+        <!-- Candle Flame -->
+        <div id="flame" class="flame absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-8 bg-amber-400 rounded-full blur-[1px] shadow-[0_0_15px_#f59e0b]">
+          <div class="w-2 h-4 bg-white rounded-full mx-auto mt-2"></div>
+        </div>
+        <!-- Candle Wick -->
+        <div id="wick" class="absolute top-3 left-1/2 -translate-x-1/2 w-1 h-3 bg-neutral-700"></div>
+        <!-- Cake Body -->
+        <div class="absolute bottom-0 w-full h-20 bg-neutral-800 rounded-b-xl border-t-4 border-amber-500 overflow-hidden flex flex-col justify-between p-2">
+          <div class="w-full h-2 bg-neutral-700 rounded-full"></div>
+          <div class="w-full h-2 bg-neutral-700 rounded-full"></div>
+          <div class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">Carmine 2005</div>
+        </div>
+      </div>
+
+      <button id="blow-btn" onclick="blowOutCandle()" class="mt-6 bg-white text-black font-bold px-6 py-2.5 rounded-full text-sm hover:bg-neutral-200 transition shadow-lg flex items-center justify-center gap-2 mx-auto">
+        <i class="fa-solid fa-wind"></i> Soffia la Candelina
+      </button>
+    </div>
+
+    <!-- Ticket Container (Hidden at start, revealed on click) -->
+    <div id="gift-container" class="w-full hidden flex-col gap-4 animate-fade-in">
+      
+      <!-- Ticket Header Badge -->
+      <div class="text-center">
+        <span class="text-xs text-amber-400 font-semibold tracking-widest uppercase">
+          <i class="fa-solid fa-gift mr-1"></i> Il tuo regalo di compleanno
+        </span>
+      </div>
+
+      <!-- Apple Wallet Ticket Replica -->
+      <div class="ticket-card overflow-hidden text-white relative">
+        
+        <!-- Top Cutout Notch -->
+        <div class="w-8 h-3 bg-[#0b0b0b] rounded-b-full mx-auto -mt-1 border-b border-x border-neutral-800"></div>
+
+        <!-- Header Info -->
+        <div class="px-6 pt-3 flex justify-between items-center text-xs text-neutral-400 font-mono">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl font-black tracking-tighter text-white font-sans">J</span>
+          </div>
+          <div>
+            <div class="font-bold text-white">01/11/2026</div>
+            <div class="text-[10px]">20:45 CET</div>
+          </div>
+        </div>
+
+        <!-- Match Banner Image Area -->
+        <div class="relative mt-3 px-6 py-4 bg-neutral-900 border-y border-neutral-800 text-center">
+          <h2 class="text-2xl md:text-3xl font-black tracking-tight text-white uppercase">
+            Juventus - Napoli
+          </h2>
+          <!-- Sponsor Icons -->
+          <div class="flex justify-center items-center gap-3 mt-2 text-[9px] text-neutral-400 font-semibold">
+            <span>adidas</span> • <span>Jeep</span> • <span>Visit Detroit</span> • <span>Allianz Stadium</span>
+          </div>
+        </div>
+
+        <!-- Personal Info Section -->
+        <div class="px-6 py-4 grid grid-cols-2 gap-4 text-left border-b border-neutral-800/60">
+          <div>
+            <div class="text-[10px] text-neutral-500 font-mono uppercase">04/10/2005</div>
+            <div class="text-sm font-bold tracking-wide uppercase text-white">CARMINE PIO</div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-neutral-500 font-mono uppercase">OTTAVIANO (NA)</div>
+            <div class="text-sm font-bold tracking-wide uppercase text-white">LA MONTAGNA</div>
+          </div>
+        </div>
+
+        <!-- Stadium Seat Details Grid -->
+        <div class="px-6 py-4 grid grid-cols-3 gap-2 text-center bg-neutral-950/50">
+          <div>
+            <div class="text-[9px] text-neutral-500 font-mono uppercase">INGRESSO</div>
+            <div class="text-xl font-black text-white">D</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-neutral-500 font-mono uppercase">SET. - FILA - POSTO</div>
+            <div class="text-xl font-black text-white">111 - 15 - 21</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-neutral-500 font-mono uppercase">CARD</div>
+            <div class="text-xl font-black text-white">JCARD</div>
+          </div>
+        </div>
+
+        <!-- Bottom NFC Contactless Scanner Graphic -->
+        <div class="py-6 flex flex-col items-center justify-center bg-black">
+          <div class="w-12 h-12 rounded-full border-2 border-blue-500 flex items-center justify-center nfc-pulse mb-2">
+            <i class="fa-solid fa-mobile-screen-button text-blue-400 text-lg"></i>
+          </div>
+          <span class="text-xs text-neutral-400">Avvicina il dispositivo al lettore</span>
+        </div>
+      </div>
+
+      <!-- Train Ticket (Italo) -->
+      <div class="bg-red-700 text-white rounded-2xl p-4 flex justify-between items-center shadow-lg border border-red-600 mt-2">
+        <div class="flex items-center gap-3">
+          <div class="font-black italic text-xl">.italo</div>
+          <div class="text-xs border-l border-red-500 pl-3">
+            <div class="font-bold">Viaggio A/R Incluso</div>
+            <div class="text-red-200 text-[10px]">Stazione di Partenza ➔ Torino Porta Nuova</div>
+          </div>
+        </div>
+        <div class="text-right font-mono text-xs">
+          <div class="text-red-200 text-[9px]">DATA</div>
+          <div class="font-bold">09 Oct</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-8 text-center text-xs text-neutral-600 z-10">
+    <p>Creato con ❤️ per il tuo compleanno | Allianz Stadium 2026</p>
+  </footer>
+
+  <script>
+    function blowOutCandle() {
+      // Hide flame & wick effect
+      const flame = document.getElementById('flame');
+      const cakeSection = document.getElementById('cake-section');
+      const giftContainer = document.getElementById('gift-container');
+
+      if (flame) {
+        flame.style.display = 'none';
+      }
+
+      // Confetti effect
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      // Show gift with slight delay
+      setTimeout(() => {
+        cakeSection.classList.add('hidden');
+        giftContainer.classList.remove('hidden');
+        giftContainer.classList.add('flex');
+
+        // Extra confetti shower
+        setTimeout(() => {
+          confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.4 }
+          });
+        }, 300);
+      }, 600);
+    }
+  </script>
+</body>
+</html>
